@@ -1,6 +1,15 @@
 const width = 28;
 const grid = document.querySelector('.grid');
 const scoreDisplay = document.getElementById('score');
+let squares = [];
+let score = 0;
+
+// 0 - pacdots
+// 1 - wall
+// 2 - ghost lair
+// 3 - powerpellets
+// 4 - empty
+
 const layout = [
   1,
   1,
@@ -788,26 +797,105 @@ const layout = [
   1,
 ];
 
-let squares = [];
-
-function createBoard() {
+//create board
+const createBoard = () => {
+  //for loop
   for (let i = 0; i < layout.length; i++) {
+    //create a square
     const square = document.createElement('div');
+    //put square in grid
     grid.appendChild(square);
+    //put square in squares array
     squares.push(square);
+
     if (layout[i] === 0) {
       squares[i].classList.add('pac-dot');
     } else if (layout[i] === 1) {
       squares[i].classList.add('wall');
     } else if (layout[i] === 3) {
       squares[i].classList.add('power-pellet');
+    } else if (layout[i] === 2) {
+      squares[i].classList.add('ghost-lair');
     }
   }
-}
+};
 createBoard();
 
-//position of pacman
+// down - 40
+// up key - 38
+// left - 37
+// right - 39
 
-let pacmanCurrent = 490;
+//starting position of pacman
+let pacmanCurrentIndex = 490;
+squares[pacmanCurrentIndex].classList.add('pacman');
 
-squares[pacmanCurrent].classList.add('pacman');
+const control = (e) => {
+  squares[pacmanCurrentIndex].classList.remove('pacman');
+  switch (e.keyCode) {
+    case 40:
+      if (
+        !squares[pacmanCurrentIndex + width].classList.contains('ghost-lair') &&
+        !squares[pacmanCurrentIndex + width].classList.contains('wall') &&
+        pacmanCurrentIndex + width < width * width
+      )
+        pacmanCurrentIndex += width;
+      break;
+    case 38:
+      if (
+        !squares[pacmanCurrentIndex - width].classList.contains('ghost-lair') &&
+        !squares[pacmanCurrentIndex - width].classList.contains('wall') &&
+        pacmanCurrentIndex - width >= 0
+      )
+        pacmanCurrentIndex -= width;
+      break;
+    case 37:
+      if (
+        !squares[pacmanCurrentIndex - 1].classList.contains('ghost-lair') &&
+        !squares[pacmanCurrentIndex - 1].classList.contains('wall') &&
+        pacmanCurrentIndex % width !== 0
+      )
+        pacmanCurrentIndex -= 1;
+      if (pacmanCurrentIndex === 364) {
+        pacmanCurrentIndex = 391;
+      }
+      break;
+    case 39:
+      if (
+        !squares[pacmanCurrentIndex + 1].classList.contains('ghost-lair') &&
+        !squares[pacmanCurrentIndex + 1].classList.contains('wall') &&
+        pacmanCurrentIndex % width < width - 1
+      )
+        pacmanCurrentIndex += 1;
+      if (pacmanCurrentIndex === 391) {
+        pacmanCurrentIndex = 364;
+      }
+      break;
+  }
+  squares[pacmanCurrentIndex].classList.add('pacman');
+  pacDotEaten();
+};
+document.addEventListener('keydown', control);
+
+const pacDotEaten = () => {
+  if (squares[pacmanCurrentIndex].classList.contains('pac-dot')) {
+    squares[pacmanCurrentIndex].classList.remove('pac-dot');
+    score++;
+    scoreDisplay.innerHTML = score;
+  }
+};
+
+class Ghost {
+  constructor(className, startIndex, speed) {
+    this.className = className;
+    this.startIndex = startIndex;
+    this.speed = speed;
+  }
+}
+
+ghosts = [
+  new Ghost('blinky', 348, 250),
+  new Ghost('pinky', 376, 400),
+  new Ghost('inky', 351, 300),
+  new Ghost('clyde,379,500'),
+];
