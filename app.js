@@ -957,5 +957,36 @@ function moveGhost(ghost) {
     if (ghost.isScared) {
       squares[ghost.currentIndex].classList.add('scared-ghost');
     }
+
+    //if the ghost is current scared AND pacman is on it
+    if (
+      ghost.isScared &&
+      squares[ghost.currentIndex].classList.contains('pacman')
+    ) {
+      //remove classnames - ghost.className, 'ghost', 'scared-ghost'
+      squares[ghost.currentIndex].classList.remove(
+        ghost.className,
+        'ghost',
+        'scared-ghost'
+      );
+      // change ghosts currentIndex back to its startIndex
+      ghost.currentIndex = ghost.startIndex;
+      //add a score of 100
+      score += 100;
+      //re-add classnames of ghost.className and 'ghost' to the ghosts new postion
+      squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+    }
+    gameOver();
   }, ghost.speed);
+}
+
+function gameOver() {
+  if (
+    squares[pacmanCurrentIndex].classList.contains('ghost') &&
+    !squares[pacmanCurrentIndex].classList.contains('scared-ghost')
+  ) {
+    ghosts.forEach((ghost) => clearInterval(ghost.timerId));
+    document.removeEventListener('keydown', control);
+    scoreDisplay.textContent = 'You Lose Game Over!';
+  }
 }
