@@ -49,11 +49,16 @@ body {
 }
 
 .inky {
-  background-color: blue;
+  background-color: aqua;
   border: none;
 }
 
 .clyde {
   background-color: orange;
+  border: none;
+}
+
+.scared-ghosts {
+  background-color: aquamarine;
   border: none;
 }
